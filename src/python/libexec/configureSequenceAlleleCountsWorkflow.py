@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 #
 # Strelka - Small Variant Caller
 # Copyright (c) 2009-2018 Illumina, Inc.
@@ -24,10 +24,10 @@ This script configures the sequence error counts workflow
 
 import os,sys
 
-if sys.version_info >= (3,0):
-    import platform
-    raise Exception("Strelka does not currently support python3 (version %s detected)" % (platform.python_version()))
-
+#if sys.version_info >= (3,0):
+#    import platform
+#    raise Exception("Strelka does not currently support python3 (version %s detected)" % (platform.python_version()))
+#
 if sys.version_info < (2,6):
     import platform
     raise Exception("Strelka requires python2 version 2.6+ (version %s detected)" % (platform.python_version()))
@@ -35,7 +35,7 @@ if sys.version_info < (2,6):
 
 scriptDir=os.path.abspath(os.path.dirname(__file__))
 scriptName=os.path.basename(__file__)
-workflowDir=os.path.abspath(os.path.join(scriptDir,"@THIS_RELATIVE_PYTHON_LIBDIR@"))
+workflowDir=os.path.abspath(os.path.join(scriptDir,"../lib/python"))
 
 sys.path.append(workflowDir)
 
@@ -84,7 +84,7 @@ This script configures the Strelka sequence allele counts workflow.
 
         libexecDir=defaults["libexecDir"]
 
-        configDir=os.path.abspath(os.path.join(scriptDir,"@THIS_RELATIVE_CONFIGDIR@"))
+        configDir=os.path.abspath(os.path.join(scriptDir,""))
         assert os.path.isdir(configDir)
 
         defaults.update({

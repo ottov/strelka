@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 #
 # Strelka - Small Variant Caller
 # Copyright (c) 2009-2018 Illumina, Inc.
@@ -28,13 +28,12 @@ import cyvcf2
 import numpy as np
 import pytest
 import vcf
-
 from numpy.testing import assert_allclose
 
 import denovo
 
 
-python_exec = 'python'
+python_exec = '/usr/bin/python3'
 denovo_script = './denovo.py'
 
 dev_null = open(os.devnull, 'wb')
@@ -101,7 +100,7 @@ def datasets():
         'par_bed': 'PARv5.bed'
     }
 
-    paths = {name: get_test_data_path(path) for name, path in files.iteritems()}
+    paths = {name: get_test_data_path(path) for name, path in files.items()}
 
     return paths
 
@@ -284,7 +283,7 @@ def test_cmd_ids_spw_ref(datasets, tempdir):
 
     n_hit = 0
     n_called = {'indel': 0, 'snp': 0}
-    for variant, variant2 in itertools.izip(vr1, vr2):
+    for variant, variant2 in zip(vr1, vr2):
         assert variant == variant2
         for sample in variant.samples:
             assert 'DQ' in sample.data._fields
@@ -292,8 +291,8 @@ def test_cmd_ids_spw_ref(datasets, tempdir):
         if v in strelka_truth_set:
             assert variant.samples[2]['DQ'] >= 20.0
             n_hit += 1
-        if variant.samples[2]['DQ'] >= 15.0:
-            n_called[variant.var_type] += 1
+        if variant.samples[2]['DQ'] is not None and variant.samples[2]['DQ'] >= 15.0:
+              n_called[variant.var_type] += 1
         # check number of decimals
         dq = variant.samples[2]['DQ']
         if dq is not None:
@@ -315,7 +314,6 @@ def test_cmd_parallel_spw_ref(datasets, tempdir):
             '--mother', 'Mother',
             '--father', 'Father',
             datasets['vcf_spw'], vcf_out_path1]
-
     sp.check_call(cmd1)
 
     # run the same analysis a second time on the previous output should not change the results
@@ -340,7 +338,7 @@ def test_cmd_parallel_spw_ref(datasets, tempdir):
 
     n_hit = 0
     n_called = {'indel': 0, 'snp': 0}
-    for variant, variant2 in itertools.izip(vr1, vr2):
+    for variant, variant2 in zip(vr1, vr2):
         assert variant == variant2
         for sample in variant.samples:
             assert 'DQ' in sample.data._fields
@@ -348,8 +346,8 @@ def test_cmd_parallel_spw_ref(datasets, tempdir):
         if v in strelka_truth_set:
             assert variant.samples[2]['DQ'] >= 20.0
             n_hit += 1
-        if variant.samples[2]['DQ'] >= 15.0:
-            n_called[variant.var_type] += 1
+        if variant.samples[2]['DQ'] is not None and variant.samples[2]['DQ'] >= 15.0:
+           n_called[variant.var_type] += 1
         # check number of decimals
         dq = variant.samples[2]['DQ']
         if dq is not None:
@@ -398,7 +396,7 @@ def test_cmd_single_parallel_spw_comparison(datasets, tempdir):
     assert vr1.metadata['denovo_program'][0] == vr2.metadata['denovo_program'][0]
     assert vr1.formats['DQ'] == vr1.formats['DQ']
 
-    for variant, variant2 in itertools.izip(vr1, vr2):
+    for variant, variant2 in zip(vr1, vr2):
         assert variant == variant2
 
 
@@ -494,7 +492,7 @@ def test_cmd_pedphase_filter_spw(datasets, tempdir):
     check_denovo_header(vr2)
 
     n_denovo = n_no_denovo = n_no_dq = 0
-    for variant, variant2 in itertools.izip(vr1, vr2):
+    for variant, variant2 in zip(vr1, vr2):
         assert variant == variant2
         # compare against simulation tags
         has_dq_field = 'DQ' in variant.samples[0].data._fields
@@ -566,7 +564,7 @@ def test_cmd_proband_sibling_five_samples(datasets, tempdir):
     sample_indices = lambda vcf, samples: \
                           [vcf.samples.index(sample) for sample in samples]
 
-    for variant1, variant2 in itertools.izip(vf1, vf2):
+    for variant1, variant2 in zip(vf1, vf2):
         # compare common most fields are the same
         for field in ('CHROM', 'POS', 'ID', 'REF', 'ALT', 'FILTER', 'INFO', 'FORMAT'):
             assert variant1.__getattribute__(field) == variant2.__getattribute__(field)
@@ -765,7 +763,7 @@ def test_python_best_dng_reference(datasets, tempdir):
     check_denovo_header(vr2)
 
     for v1, v2, r in zip(vr1, vr2, ref):
-        rf = r.split(' ')
+        rf = r.decode('UTF-8').split(' ')
         # same position
         assert v1.POS == int(rf[6])
         assert v2.POS == int(rf[6])
@@ -804,14 +802,15 @@ def test_python_call_dng_reference(datasets, tempdir):
 
     n_hits = 0
     for variant, r in zip(vr, ref):
-        rf = r.split(' ')
+        rf = r.decode('UTF-8').split(' ')
         # same position
         assert variant.POS == int(rf[6])
         # compare denovo scores with reference values
         dng = round(denovo.prob2score(1.0 - float(rf[24])), 1)
         if 'DQ' in variant.samples[0].data._fields:
-            assert variant.samples[0]['DQ'] <= dng
-            n_hits += 1
+            if variant.samples[0]['DQ'] is not None:
+              assert variant.samples[0]['DQ'] <= dng
+              n_hits += 1
 
     assert n_hits > 0
 
@@ -840,7 +839,7 @@ def test_python_spw_ref(datasets, tempdir):
     for variant in vr:
         v = (variant.CHROM, variant.POS, variant.REF, variant.ALT)
         if 'DQ' in variant.samples[child_idx].data._fields:
-            if variant.samples[child_idx]['DQ'] >= 15.0:
+            if variant.samples[child_idx]['DQ'] is not None and variant.samples[child_idx]['DQ'] >= 15.0:
                 n_called[variant.var_type] += 1
             for (sample_index, sample) in enumerate(variant.samples):
                 if sample_index != child_idx:
@@ -889,7 +888,7 @@ def test_python_spw_decimals_ref(datasets, tempdir):
             assert 'DQ' in sample.data._fields
         v = (variant.CHROM, variant.POS, variant.REF, variant.ALT)
         if 'DQ' in variant.samples[child_idx].data._fields:
-            if variant.samples[child_idx]['DQ'] >= 15.0:
+            if variant.samples[child_idx]['DQ'] is not None and variant.samples[child_idx]['DQ'] >= 15.0:
                 n_called[variant.var_type] += 1
             for (sample_index, sample) in enumerate(variant.samples):
                 if sample_index != child_idx:
@@ -936,11 +935,11 @@ def test_python_spw_ref_five_samples(datasets, tempdir):
             assert variant.samples[child_idx]['DQ'] >= 20.0
             n_hit += 1
         if 'DQ' in variant.samples[child_idx].data._fields:
-            for sample_index in xrange(len(variant.samples)):
+            for sample_index in range(len(variant.samples)):
                 sample = variant.samples[sample_index]
                 if sample_index != child_idx:
                     assert sample['DQ'] is None
-                elif sample['DQ'] >= 15.0:
+                elif sample['DQ'] is not None and sample['DQ'] >= 15.0:
                     n_called[variant.var_type] += 1
 
     assert n_called['snp'] >= 4
@@ -991,7 +990,7 @@ def test_python_spw_old_prior_cases(datasets, tempdir):
 def test_snv_prior_import_order():
     """Test SNV prior import and reordering"""
 
-    for prior_type, prior_path in denovo._prior_paths.iteritems():
+    for prior_type, prior_path in denovo._prior_paths.items():
 
         prior_path = prior_path['snv']
         assert os.path.exists(prior_path)
@@ -1021,7 +1020,7 @@ def test_indel_length_prior_computation():
     assert len(mut_rate) == max_len+1
     assert np.all(np.diff(mut_rate) < 0.0)  # decaying values
 
-    for prior_type, prior_path in denovo._prior_paths.iteritems():
+    for prior_type, prior_path in denovo._prior_paths.items():
 
         prior_path = prior_path['indel']
         assert os.path.exists(prior_path)
@@ -1441,7 +1440,7 @@ def test_import_par_bed(datasets):
     par = denovo.import_bed_regions(par_path)
 
     # check properties of data structure
-    for contig, coords in par.iteritems():
+    for contig, coords in par.items():
         assert contig == 'X'
         assert isinstance(coords, tuple)
         for pos in coords:

@@ -206,16 +206,18 @@ def getChromIntervals(chromOrder, chromSizes, segmentSize, genomeRegion = None) 
                     chromEnd=genomeRegion["end"]
 
         chromSize=(chromEnd-chromStart+1)
-        chromSegments=1+((chromSize-1)/segmentSize)
-        segmentBaseSize=chromSize/chromSegments
+        chromSegments = int(1+((chromSize-1)/segmentSize)) # py2 implict int conversion
+        segmentBaseSize = int(chromSize/chromSegments)
         nPlusOne=chromSize%chromSegments
         start=chromStart
-        for i in xrange(chromSegments) :
+
+        for i in range(chromSegments) :
             segSize=segmentBaseSize
             if i<nPlusOne : segSize += 1
             end=min(start+(segSize-1),chromStart+chromSize)
             yield (chromIndex,chromLabel,start,end,i,genomeRegion)
             start=end+1
+
 
 
 class PathDigger(object) :

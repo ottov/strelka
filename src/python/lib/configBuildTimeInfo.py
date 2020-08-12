@@ -23,5 +23,5 @@ and build date. This is in contrast to cmake configuration-time
 config data like relative paths and library/header availability.
 """
 
-workflowVersion="@WORKFLOW_VERSION@"
-buildTime="@BUILD_TIME@"
+workflowVersion="2.9.10"
+buildTime="2018-11-08T00:32:40.775496Z"

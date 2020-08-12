@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 #
 # Strelka - Small Variant Caller
 # Copyright (c) 2009-2018 Illumina, Inc.
@@ -26,7 +26,7 @@ import os,sys
 
 scriptDir=os.path.abspath(os.path.dirname(__file__))
 scriptName=os.path.basename(__file__)
-workflowDir=os.path.abspath(os.path.join(scriptDir,"@THIS_RELATIVE_PYTHON_LIBDIR@"))
+workflowDir=os.path.abspath(os.path.join(scriptDir,"../lib/python"))
 
 
 sys.path.append(workflowDir)
@@ -89,10 +89,10 @@ You must specify a BAM or CRAM file.
 
 def main() :
 
-    if (sys.version_info[0] != 2):
-        notefp=sys.stdout
-        notefp.write("""Failed to create workflow run script.\nPyflow only supports python2. Detected python %s on the system.\n""" % sys.version_info[0])
-        return
+#    if (sys.version_info[0] != 2):
+#        notefp=sys.stdout
+#        notefp.write("""Failed to create workflow run script.\nPyflow only supports python2. Detected python %s on the system.\n""" % sys.version_info[0])
+#        return
 
     primarySectionName="snoise"
     options,iniSections=snoiseWorkflowOptions().getRunOptions(primarySectionName, version=workflowVersion)

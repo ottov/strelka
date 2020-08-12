@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 #
 # Strelka - Small Variant Caller
 # Copyright (c) 2009-2018 Illumina, Inc.
@@ -25,7 +25,7 @@ Merge chrom depth from multiple samples/mapping files
 import os,sys
 
 scriptDir=os.path.abspath(os.path.dirname(__file__))
-pythonLibDir=os.path.abspath(os.path.join(scriptDir,"@THIS_RELATIVE_PYTHON_LIBDIR@"))
+pythonLibDir=os.path.abspath(os.path.join(scriptDir,"../lib/python"))
 sys.path.append(pythonLibDir)
 
 from workflowUtil import checkFile

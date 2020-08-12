@@ -74,18 +74,18 @@ def getBamChromInfo(htsfileBin,bam) :
 
     proc=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
     for line in proc.stdout :
-        if not line.startswith("@SQ") : continue
-        w = line.strip().split('\t')
+        if not line.startswith("@SQ".encode('ascii')) : continue
+        w = line.strip().split('\t'.encode('ascii'))
         if len(w) < 3 :
             chromError("Unexpected BAM/CRAM header for file '%s'" % (bam))
 
         h = {}
         for word in w[1:] :
-            vals=word.split(':', 1)
+            vals=word.split(':'.encode('ascii'), 1)
             h[vals[0]] = vals[1]
 
-        key = h["SN"]
-        size = int(h["LN"])
+        key = h[b"SN"].decode('ascii')
+        size = int(h[b"LN"])
         if size <= 0 :
             chromError("Unexpected chromosome size '%i' in BAM/CRAM header for file '%s'" % (size,bam))
 
@@ -110,7 +110,7 @@ def getTabixChromSet(tabixBin, tabixFile) :
     tabixCmd = [tabixBin, "-l", tabixFile]
     proc=subprocess.Popen(tabixCmd, stdout=subprocess.PIPE)
     for line in proc.stdout :
-        chrom = line.strip()
+        chrom = line.strip().decode('ascii')
         chromSet.add(chrom)
 
     proc.stdout.close()
@@ -172,7 +172,7 @@ def checkChromSet(htsfileBin,referenceFasta,bamList,bamLabel=None,isReferenceLoc
 
     # first bam is used as a reference:
     chromInfo = getBamChromInfo(htsfileBin,bamList[0])
-    chroms = sorted(chromInfo.keys(),key=lambda x:chromInfo[x][1])
+    chroms = sorted(list(chromInfo.keys()),key=lambda x:chromInfo[x][1])
 
     # check that first bam is compatible with reference:
     for chrom in chroms :
@@ -184,7 +184,7 @@ def checkChromSet(htsfileBin,referenceFasta,bamList,bamLabel=None,isReferenceLoc
 
     # optionally check that BAM contains all chromosomes in reference:
     if isReferenceLocked :
-        for refChrom in refChromInfo.keys() :
+        for refChrom in list(refChromInfo.keys()) :
             if refChrom not in chroms :
                 chromError("Reference genome mismatch: %s BAM/CRAM file is missing a chromosome found in the reference fasta file: '%s'" % (bamLabel[0], refChrom))
 
@@ -207,5 +207,5 @@ def checkChromSet(htsfileBin,referenceFasta,bamList,bamLabel=None,isReferenceLoc
         # If all chromosomes matched, then compareChromInfo should be empty at this point.
         #
         # Check that no chromosomes are unique to the 'compare' BAM file.
-        for chrom in compareChromInfo.keys() :
+        for chrom in list(compareChromInfo.keys()) :
             chromError("Reference genome mismatch: %s BAM/CRAM file is missing a chromosome found in the %s BAM/CRAM file: '%s'" % (bamLabel[0], bamLabel[index], chrom))

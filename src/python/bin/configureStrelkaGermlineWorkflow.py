@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 #
 # Strelka - Small Variant Caller
 # Copyright (c) 2009-2018 Illumina, Inc.
@@ -24,9 +24,9 @@ This script configures the strelka germline small variant calling workflow
 
 import os,sys
 
-if sys.version_info >= (3,0):
-    import platform
-    raise Exception("Strelka does not currently support python3 (version %s detected)" % (platform.python_version()))
+#if sys.version_info >= (3,0):
+#    import platform
+#    raise Exception("Strelka does not currently support python3 (version %s detected)" % (platform.python_version()))
 
 if sys.version_info < (2,6):
     import platform

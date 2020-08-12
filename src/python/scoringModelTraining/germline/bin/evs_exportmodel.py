@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 #
 # Strelka - Small Variant Caller
 # Copyright (c) 2009-2018 Illumina, Inc.
@@ -32,7 +32,7 @@ import json
 
 scriptDir = os.path.abspath(os.path.dirname(__file__))
 workflowDir = os.path.abspath(
-#    os.path.join(scriptDir, "@THIS_RELATIVE_PYTHON_LIBDIR@"))
+#    os.path.join(scriptDir, "../lib"))
     os.path.join(scriptDir, "../lib"))
 
 sys.path.append(workflowDir)
