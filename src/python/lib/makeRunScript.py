@@ -73,7 +73,7 @@ def makeRunScript(scriptFile, workflowModulePath, workflowClassName, primaryConf
     sfp.write('main(r"%s","%s",%s)\n' % (pickleConfigFile, primaryConfigSection, workflowClassName))
     sfp.write('\n')
     sfp.close()
-    os.chmod(scriptFile,755)
+    os.chmod(scriptFile,0o755)
 
 
 
